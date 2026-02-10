@@ -13,12 +13,11 @@ export interface RequestValidationSchema {
   query?: Schema;
 }
 
-const formatedError = (error: ZodError) => {
+const formatedError = (error: ZodError) =>
   error.issues.map((issue) => ({
     path: issue.path.join("."),
     message: issue.message,
   }));
-};
 
 export const validateRequest = (schemas: RequestValidationSchema) => {
   return (req: Request, _res: Response, next: NextFunction) => {
@@ -46,7 +45,10 @@ export const validateRequest = (schemas: RequestValidationSchema) => {
             issues: formatedError(error),
           }),
         );
+        return;
       }
+
+      next(error);
     }
   };
 };
