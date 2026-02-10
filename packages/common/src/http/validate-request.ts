@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { HttpError } from "../errors/http-errors";
 import type { Request, Response, NextFunction } from "express";
 import { ZodObject, ZodError, ZodArray } from "zod";
