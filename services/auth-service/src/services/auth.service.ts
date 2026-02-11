@@ -1,7 +1,7 @@
 import { sequelize } from "@/db/sequelize";
 import { RefreshToken, UserCredentials } from "@/models";
 import { AuthResponse, RegisterInput } from "@/types/auth";
-import { hashPassword } from "@/utils/token";
+import { hashPassword, signAccessToken, signRefreshToken } from "@/utils/token";
 import { HttpError } from "@chatapp/common";
 import { Op, Transaction } from "sequelize";
 import crypto from "crypto";
@@ -34,7 +34,31 @@ export const register = async (input: RegisterInput): Promise<AuthResponse> => {
     const refreshTokenRecord = await createRefreshToken(user.id, transaction);
 
     await transaction.commit();
-  } catch (error) {}
+
+    const accessToken = signAccessToken({ sub: user.id, email: user.email });
+    const refreshToken = signRefreshToken({
+      sub: user.id,
+      tokenId: refreshTokenRecord.tokenId,
+    });
+
+    const userData = {
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      createdAt: user.createdAt.toISOString(),
+    };
+
+    // TODO: publish event UserRegistered
+
+    return {
+      accessToken,
+      refreshToken,
+      user: userData,
+    };
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 const createRefreshToken = async (
