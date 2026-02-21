@@ -3,5 +3,8 @@ export * from "./logger";
 export * from "./errors/http-errors";
 export * from "./http/async-handler";
 export * from "./http/validate-request";
+export * from "./http/internal-auth";
+export * from "./events/event-types";
+export * from "./events/auth-event";
 export { z } from "zod";
 export type { Logger } from "pino";
