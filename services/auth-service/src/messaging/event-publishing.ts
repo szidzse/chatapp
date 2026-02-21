@@ -68,3 +68,21 @@ export const publishUserRegisteredEvent = (
     logger.warn({ event }, "Failed to publish user registered event");
   }
 };
+
+export const closePublisher = async () => {
+  try {
+    const ch = channel;
+    if (ch) {
+      await ch.close();
+      channel = null;
+    }
+
+    const conn = connectionRef;
+    if (conn) {
+      await conn.close();
+      connectionRef = null;
+    }
+  } catch (error) {
+    logger.error({ err: error }, "Failed to close RabbitMQ connection/channel");
+  }
+};
