@@ -57,6 +57,9 @@ importers:
       '@chatapp/common':
         specifier: workspace:^
         version: link:../../packages/common
+      '@types/amqplib':
+        specifier: ^0.10.8
+        version: 0.10.8
       amqplib:
         specifier: ^0.10.9
         version: 0.10.9
@@ -355,6 +358,9 @@ packages:
 
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
+
+  '@types/amqplib@0.10.8':
+    resolution: {integrity: sha512-vtDp8Pk1wsE/AuQ8/Rgtm6KUZYqcnTgNvEHwzCkX8rL7AGsC6zqAfKAAJhUZXFhM/Pp++tbnUHiam/8vVpPztA==}
 
   '@types/bcrypt@6.0.0':
     resolution: {integrity: sha512-/oJGukuH3D2+D+3H4JWLaAsJ/ji86dhRidzZ/Od7H/i8g+aCmvkeCc6Ni/f9uxGLSQVCRZkX2/lqEFG2BvWtlQ==}
@@ -1458,6 +1464,10 @@ snapshots:
       '@isaacs/balanced-match': 4.0.1
 
   '@pinojs/redact@0.4.0': {}
+
+  '@types/amqplib@0.10.8':
+    dependencies:
+      '@types/node': 25.2.2
 
   '@types/bcrypt@6.0.0':
     dependencies:
