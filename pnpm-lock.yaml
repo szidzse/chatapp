@@ -152,6 +152,9 @@ importers:
       helmet:
         specifier: ^8.1.0
         version: 8.1.0
+      sequelize:
+        specifier: ^6.37.7
+        version: 6.37.7(mysql2@3.16.3)
     devDependencies:
       '@types/cors':
         specifier: ^2.8.19

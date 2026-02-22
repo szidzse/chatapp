@@ -1,0 +1,31 @@
+import { Sequelize } from "sequelize";
+import { env } from "@/config/env";
+import { logger } from "@/utils/logger";
+
+export const sequelize = new Sequelize(env.USER_DB_URL, {
+  dialect: "postgres",
+  logging:
+    env.NODE_ENV === "development"
+      ? (message: unknown) => {
+          logger.debug({ sequelize: message });
+        }
+      : false,
+  define: {
+    underscored: true,
+    freezeTableName: true,
+  },
+});
+
+export const connectToDatabase = async () => {
+  await sequelize.authenticate();
+  logger.info("User database connection established successfully.");
+};
+
+export const initializeDatabase = async () => {
+  await connectToDatabase();
+};
+
+export const closeDatabase = async () => {
+  await sequelize.close();
+  logger.info("User database connection closed.");
+};
