@@ -12,7 +12,7 @@ services:
       - chatapp-network
 
   user-db:
-    image: postgres:18
+    image: postgres:16
     container_name: chatapp-user-db
     environment:
       POSTGRES_DB: ${USER_DB_NAME:-chatapp_user_service}
