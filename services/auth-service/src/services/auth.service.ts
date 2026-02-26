@@ -149,6 +149,14 @@ export const refreshTokens = async (token: string): Promise<AuthTokens> => {
   };
 };
 
+export const revokeRefreshToken = async (userId: string) => {
+  await RefreshToken.destroy({
+    where: {
+      userId,
+    },
+  });
+};
+
 const createRefreshToken = async (
   userId: string,
   transaction?: Transaction,
