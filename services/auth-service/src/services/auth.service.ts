@@ -11,11 +11,13 @@ import {
   signAccessToken,
   signRefreshToken,
   verifyPassword,
+  verifyRefreshToken,
 } from "@/utils/token";
 import { HttpError } from "@chatapp/common";
 import { Op, Transaction } from "sequelize";
 import crypto from "crypto";
 import { publishUserRegisteredEvent } from "@/messaging/event-publishing";
+import { logger } from "@/utils/logger";
 
 const REFRESH_TOKEN_TTL_DAYS = 30;
 
@@ -103,6 +105,47 @@ export const login = async (input: LoginInput): Promise<AuthTokens> => {
   return {
     accessToken,
     refreshToken,
+  };
+};
+
+export const refreshTokens = async (token: string): Promise<AuthTokens> => {
+  const payload = verifyRefreshToken(token);
+
+  const tokenRecord = await RefreshToken.findOne({
+    where: {
+      tokenId: payload.tokenId,
+      userId: payload.sub,
+    },
+  });
+
+  if (!tokenRecord) {
+    throw new HttpError(401, "Invalid refresh token");
+  }
+
+  if (tokenRecord.expiresAt.getTime() < Date.now()) {
+    await tokenRecord.destroy();
+    throw new HttpError(401, "Refresh token has expired");
+  }
+
+  const credential = await UserCredentials.findByPk(payload.sub);
+
+  if (!credential) {
+    logger.warn({ userId: payload.sub }, "User missing for refresh token");
+    throw new HttpError(401, "Invalid refresh token");
+  }
+
+  await tokenRecord.destroy();
+  const newTokenRecord = await createRefreshToken(credential.id);
+
+  return {
+    accessToken: signAccessToken({
+      sub: credential.id,
+      email: credential.email,
+    }),
+    refreshToken: signRefreshToken({
+      sub: credential.id,
+      tokenId: newTokenRecord.tokenId,
+    }),
   };
 };
 
