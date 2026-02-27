@@ -3,10 +3,18 @@ import type { CreateUserInput, User } from "@/types/user";
 
 import { sequelize } from "@/db";
 import { userRepository } from "@/repositories/user.repositories";
-import { AuthUserRegisteredPayload } from "@chatapp/common";
+import { AuthUserRegisteredPayload, HttpError } from "@chatapp/common";
 
 class UserService {
   constructor(private readonly repository: UserRepository) {}
+
+  async getUserById(id: string): Promise<User> {
+    const user = await this.repository.findById(id);
+    if (!user) {
+      throw new HttpError(404, "User not found");
+    }
+    return user;
+  }
 
   async syncFromAuthUser(payload: AuthUserRegisteredPayload): Promise<User> {
     const user = await this.repository.upsertFromAuthEvent(payload);
