@@ -1,5 +1,15 @@
-import { registerUser } from "@/controllers/auth.controller";
-import { registerSchema } from "@/validation/auth.schema";
+import {
+  loginUser,
+  refreshTokens,
+  registerUser,
+  revokeTokens,
+} from "@/controllers/auth.controller";
+import {
+  loginSchema,
+  refreshSchema,
+  registerSchema,
+  revokeSchema,
+} from "@/validation/auth.schema";
 import { asyncHandler, validateRequest } from "@chatapp/common";
 import { Router } from "express";
 
@@ -9,4 +19,22 @@ authRouter.post(
   "/register",
   validateRequest({ body: registerSchema }),
   asyncHandler(registerUser),
+);
+
+authRouter.post(
+  "/login",
+  validateRequest({ body: loginSchema }),
+  asyncHandler(loginUser),
+);
+
+authRouter.post(
+  "/refresh",
+  validateRequest({ body: refreshSchema }),
+  asyncHandler(refreshTokens),
+);
+
+authRouter.post(
+  "/revoke",
+  validateRequest({ body: revokeSchema }),
+  asyncHandler(revokeTokens),
 );
