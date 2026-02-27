@@ -24,6 +24,11 @@ export class UserRepository {
     return users.map(toDomainUser);
   }
 
+  async create(data: CreateUserInput): Promise<User> {
+    const user = await UserModel.create(data);
+    return toDomainUser(user);
+  }
+
   async upsertFromAuthEvent(payload: AuthUserRegisteredPayload): Promise<User> {
     const [user] = await UserModel.upsert(
       {
