@@ -57,7 +57,7 @@ const ensureChannel = async (): Promise<Channel | null> => {
 
 export const initMessaging = async () => {
   if (!messagingEnabled) {
-    logger.info("RabbitMQ URL is not configured, messaging disabled");
+    logger.info("RabbitMQ URL is not configured; messaging disabled");
     return;
   }
 
@@ -82,5 +82,39 @@ export const closeMessaging = async () => {
     logger.info("User service RabbitMQ publisher closed");
   } catch (error) {
     logger.error({ err: error }, "Error closing RabbitMQ channel/connection");
+  }
+};
+
+export const publishUserCreatedEvent = async (payload: UserCreatedPayload) => {
+  const ch = await ensureChannel();
+
+  if (!ch) {
+    logger.debug(
+      { payload },
+      "Skipping user.created event publish; messaging disabled",
+    );
+    return;
+  }
+
+  const event: UserCreatedEvent = {
+    type: USER_CREATED_ROUTING_KEY,
+    payload,
+    occurredAt: new Date().toISOString(),
+    metadata: { version: 1 },
+  };
+
+  try {
+    const success = ch.publish(
+      USER_EVENTS_EXCHANGE,
+      USER_CREATED_ROUTING_KEY,
+      Buffer.from(JSON.stringify(event)),
+      { contentType: "application/json", persistent: true },
+    );
+
+    if (!success) {
+      logger.warn({ event }, "Failed to publish user.created event");
+    }
+  } catch (error) {
+    logger.error({ err: error }, "Error publishing user.created event");
   }
 };
