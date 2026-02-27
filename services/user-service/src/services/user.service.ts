@@ -4,6 +4,7 @@ import type { CreateUserInput, User } from "@/types/user";
 import { sequelize } from "@/db";
 import { userRepository } from "@/repositories/user.repositories";
 import { AuthUserRegisteredPayload, HttpError } from "@chatapp/common";
+import { UniqueConstraintError } from "sequelize";
 
 class UserService {
   constructor(private readonly repository: UserRepository) {}
@@ -18,6 +19,21 @@ class UserService {
 
   async getAllUsers(): Promise<User[]> {
     return this.repository.findAll();
+  }
+
+  async createUser(input: CreateUserInput): Promise<User> {
+    try {
+      const user = await this.repository.create(input);
+
+      // TODO: publish user created
+
+      return user;
+    } catch (error) {
+      if (error instanceof UniqueConstraintError) {
+        throw new HttpError(409, "User already exists");
+      }
+      throw error;
+    }
   }
 
   async syncFromAuthUser(payload: AuthUserRegisteredPayload): Promise<User> {
