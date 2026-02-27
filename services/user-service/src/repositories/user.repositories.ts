@@ -29,6 +29,32 @@ export class UserRepository {
     return toDomainUser(user);
   }
 
+  async searchByQuery(
+    query: string,
+    options: { limit?: number; excludeIds?: string[] } = {},
+  ): Promise<User[]> {
+    const where: WhereOptions = {
+      [Op.or]: [
+        { displayName: { [Op.iLike]: `%${query}%` } },
+        { email: { [Op.iLike]: `%${query}%` } },
+      ],
+    };
+
+    if (options.excludeIds && options.excludeIds.length > 0) {
+      Object.assign(where, {
+        [Op.and]: [{ id: { [Op.notIn]: options.excludeIds } }],
+      });
+    }
+
+    const users = await UserModel.findAll({
+      where,
+      order: [["displayName", "ASC"]],
+      limit: options.limit ?? 10,
+    });
+
+    return users.map(toDomainUser);
+  }
+
   async upsertFromAuthEvent(payload: AuthUserRegisteredPayload): Promise<User> {
     const [user] = await UserModel.upsert(
       {
