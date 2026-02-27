@@ -25,7 +25,7 @@ class UserService {
     try {
       const user = await this.repository.create(input);
 
-      // TODO: publish user created
+      // TODO: publish user created event
 
       return user;
     } catch (error) {
@@ -36,8 +36,27 @@ class UserService {
     }
   }
 
+  async searchUsers(params: {
+    query: string;
+    limit?: number;
+    excludeIds?: string[];
+  }): Promise<User[]> {
+    const query = params.query.trim();
+    if (query.length === 0) {
+      return [];
+    }
+
+    return this.repository.searchByQuery(query, {
+      limit: params.limit,
+      excludeIds: params.excludeIds,
+    });
+  }
+
   async syncFromAuthUser(payload: AuthUserRegisteredPayload): Promise<User> {
     const user = await this.repository.upsertFromAuthEvent(payload);
+
+    // TODO: publish user created event
+
     return user;
   }
 }
