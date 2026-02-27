@@ -5,6 +5,7 @@ import { sequelize } from "@/db";
 import { userRepository } from "@/repositories/user.repositories";
 import { AuthUserRegisteredPayload, HttpError } from "@chatapp/common";
 import { UniqueConstraintError } from "sequelize";
+import { publishUserCreatedEvent } from "@/messaging/event-publisher";
 
 class UserService {
   constructor(private readonly repository: UserRepository) {}
@@ -25,7 +26,12 @@ class UserService {
     try {
       const user = await this.repository.create(input);
 
-      // TODO: publish user created event
+      void publishUserCreatedEvent({
+        id: user.id,
+        email: user.email,
+        displayName: user.displayName,
+        createdAt: user.createdAt.toISOString(),
+      });
 
       return user;
     } catch (error) {
@@ -55,7 +61,12 @@ class UserService {
   async syncFromAuthUser(payload: AuthUserRegisteredPayload): Promise<User> {
     const user = await this.repository.upsertFromAuthEvent(payload);
 
-    // TODO: publish user created event
+    void publishUserCreatedEvent({
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      createdAt: user.createdAt.toISOString(),
+    });
 
     return user;
   }
