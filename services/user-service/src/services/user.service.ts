@@ -16,6 +16,10 @@ class UserService {
     return user;
   }
 
+  async getAllUsers(): Promise<User[]> {
+    return this.repository.findAll();
+  }
+
   async syncFromAuthUser(payload: AuthUserRegisteredPayload): Promise<User> {
     const user = await this.repository.upsertFromAuthEvent(payload);
     return user;
