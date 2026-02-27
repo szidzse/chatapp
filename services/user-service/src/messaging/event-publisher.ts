@@ -54,3 +54,33 @@ const ensureChannel = async (): Promise<Channel | null> => {
 
   return amqpChannel;
 };
+
+export const initMessaging = async () => {
+  if (!messagingEnabled) {
+    logger.info("RabbitMQ URL is not configured, messaging disabled");
+    return;
+  }
+
+  await ensureChannel();
+  logger.info("User service RabbitMQ publisher initialized");
+};
+
+export const closeMessaging = async () => {
+  try {
+    if (channel) {
+      const currentChannel: Channel = channel;
+      channel = null;
+      await currentChannel.close();
+    }
+
+    if (connection) {
+      const currentConnection: ManageConnection = connection;
+      connection = null;
+      await currentConnection.close();
+    }
+
+    logger.info("User service RabbitMQ publisher closed");
+  } catch (error) {
+    logger.error({ err: error }, "Error closing RabbitMQ channel/connection");
+  }
+};
