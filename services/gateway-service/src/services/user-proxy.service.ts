@@ -76,4 +76,13 @@ export const userProxyService = {
       return handleAxiosError(error);
     }
   },
+
+  async getAllUsers(): Promise<UserListResponse> {
+    try {
+      const response = await client.get<UserListResponse>("/users", authHeader);
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  },
 };
