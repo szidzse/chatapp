@@ -20,7 +20,7 @@ const excludeSchema = z.union([
 ]);
 
 export const searchUsersQuerySchema = z.object({
-  q: z.string().trim().min(3).max(255),
+  query: z.string().trim().min(3).max(255),
   limit: z
     .union([z.string(), z.number()])
     .transform((value) => Number())
