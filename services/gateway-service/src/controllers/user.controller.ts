@@ -11,3 +11,12 @@ export const getUser: AsyncHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getAllUsers: AsyncHandler = async (req, res, next) => {
+  try {
+    const response = await userProxyService.getAllUsers();
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
+};
