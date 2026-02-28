@@ -11,6 +11,19 @@ services:
     networks:
       - chatapp-network
 
+  mongo:
+    image: mongo:7
+    container_name: chatapp-mongo
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-password}
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - chatapp-network
+
   user-db:
     image: postgres:16
     container_name: chatapp-user-db
@@ -43,6 +56,7 @@ services:
 
 volumes:
   user-db-data:
+  mongo-data:
   auth-db-data:
 
 networks:
