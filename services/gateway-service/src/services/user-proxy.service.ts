@@ -85,4 +85,17 @@ export const userProxyService = {
       return handleAxiosError(error);
     }
   },
+
+  async createUser(payload: CreateUserPayload): Promise<UserResponse> {
+    try {
+      const response = await client.post<UserResponse>(
+        "/users",
+        payload,
+        authHeader,
+      );
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  },
 };
