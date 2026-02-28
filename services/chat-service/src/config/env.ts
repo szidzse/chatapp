@@ -5,7 +5,7 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
-  CHAT_SERVICE_PORT: z.coerce.number().int().min(0).max(65_535).default(4000),
+  CHAT_SERVICE_PORT: z.coerce.number().int().min(0).max(65_535).default(4002),
   MONGO_URL: z.string().url(),
   REDIS_URL: z.string().url(),
   RABBITMQ_URL: z.string().url().optional(),
