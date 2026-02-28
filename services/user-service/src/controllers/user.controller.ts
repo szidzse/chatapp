@@ -11,3 +11,12 @@ export const getUser: AsyncHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getAllUsers: AsyncHandler = async (req, res, next) => {
+  try {
+    const users = await userService.getAllUsers();
+    res.json({ data: users });
+  } catch (error) {
+    next(error);
+  }
+};
