@@ -2,9 +2,12 @@ import { createApp } from "@/app";
 import { createServer } from "http";
 import { env } from "@/config/env";
 import { logger } from "@/utils/logger";
+import { getMongoClient } from "@/clients/mongo.client";
 
 const main = async () => {
   try {
+    await Promise.all([getMongoClient()]);
+
     const app = createApp();
     const server = createServer(app);
 
