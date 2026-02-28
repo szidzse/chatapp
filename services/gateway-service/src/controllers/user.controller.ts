@@ -1,5 +1,5 @@
 import { userProxyService } from "@/services/user-proxy.service";
-import { userIdParamsSchema } from "@/validation/user.schema";
+import { createUserSchema, userIdParamsSchema } from "@/validation/user.schema";
 import { AsyncHandler } from "@chatapp/common";
 
 export const getUser: AsyncHandler = async (req, res, next) => {
@@ -16,6 +16,16 @@ export const getAllUsers: AsyncHandler = async (req, res, next) => {
   try {
     const response = await userProxyService.getAllUsers();
     res.json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createUser: AsyncHandler = async (req, res, next) => {
+  try {
+    const payload = createUserSchema.parse(req.body);
+    const response = await userProxyService.createUser(payload);
+    res.status(201).json(response);
   } catch (error) {
     next(error);
   }
