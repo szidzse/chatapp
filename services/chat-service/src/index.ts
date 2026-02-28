@@ -2,11 +2,12 @@ import { createApp } from "@/app";
 import { createServer } from "http";
 import { env } from "@/config/env";
 import { logger } from "@/utils/logger";
-import { getMongoClient } from "@/clients/mongo.client";
+import { closeMongoClient, getMongoClient } from "@/clients/mongo.client";
+import { closeRedis, connectRedis } from "@/clients/redis.client";
 
 const main = async () => {
   try {
-    await Promise.all([getMongoClient()]);
+    await Promise.all([getMongoClient(), connectRedis()]);
 
     const app = createApp();
     const server = createServer(app);
@@ -19,7 +20,7 @@ const main = async () => {
 
     const shutdown = () => {
       logger.info("Shutting down chat service...");
-      Promise.all([])
+      Promise.all([closeRedis(), closeMongoClient()])
         .catch((error: unknown) => {
           logger.error({ error }, "Error during shutdown tasks");
         })
