@@ -98,4 +98,22 @@ export const userProxyService = {
       return handleAxiosError(error);
     }
   },
+
+  async searchUsers(params: SearchUsersParams): Promise<UserListResponse> {
+    try {
+      const response = await client.get<UserListResponse>("/users/search", {
+        headers: authHeader.headers,
+        params: {
+          query: params.query,
+          ...(params.limit ? { limit: params.limit } : {}),
+          ...(params.exclude && params.exclude.length > 0
+            ? { exclude: params.exclude }
+            : {}),
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  },
 };
