@@ -17,4 +17,19 @@ export const conversationService = {
     await conversationCache.set(conversation);
     return conversation;
   },
+
+  async getConversationById(id: string): Promise<Conversation> {
+    const cached = await conversationCache.get(id);
+    if (cached) {
+      return cached;
+    }
+
+    const conversation = await conversationRepository.findById(id);
+    if (!conversation) {
+      throw new HttpError(404, "Conversation not found");
+    }
+
+    await conversationCache.set(conversation);
+    return conversation;
+  },
 };
