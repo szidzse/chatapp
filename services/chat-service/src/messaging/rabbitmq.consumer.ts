@@ -68,3 +68,24 @@ export const startConsumers = async () => {
   consumerTag = result.consumerTag;
   logger.info("RabbitMQ consumer started");
 };
+
+export const stopConsumers = async () => {
+  try {
+    const ch = channel;
+    if (ch && consumerTag) {
+      await ch.cancel(consumerTag);
+      consumerTag = null;
+    }
+    if (ch) {
+      await ch.close();
+      channel = null;
+    }
+    const conn = connection;
+    if (conn) {
+      await closeAmqpConnection(conn);
+      connection = null;
+    }
+  } catch (error) {
+    logger.error({ err: error }, "Error stopping RabbitMQ consumer");
+  }
+};
