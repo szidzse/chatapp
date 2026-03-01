@@ -1,6 +1,7 @@
 import type { Conversation } from "@/types/conversation";
 
 import { getRedisClient } from "@/clients/redis.client";
+import { get } from "https";
 
 const CACHE_PREFIX = "conversation";
 const CACHE_TTL_SECONDS = 60;
@@ -24,4 +25,26 @@ const deserialize = (raw: string): Conversation => {
     createdAt: new Date(parsed.createdAt),
     updatedAt: new Date(parsed.updatedAt),
   };
+};
+
+export const conversationCache = {
+  async get(conversationId: string): Promise<Conversation | null> {
+    const redis = getRedisClient();
+    const payload = await redis.get(`${CACHE_PREFIX}:${conversationId}`);
+    return payload ? deserialize(payload) : null;
+  },
+
+  async set(conversation: Conversation): Promise<void> {
+    const redis = getRedisClient();
+    await redis.setex(
+      `${CACHE_PREFIX}:${conversation.id}`,
+      CACHE_TTL_SECONDS,
+      serialize(conversation),
+    );
+  },
+
+  async delete(conversationId: string): Promise<void> {
+    const redis = getRedisClient();
+    await redis.del(`${CACHE_PREFIX}:${conversationId}`);
+  },
 };
