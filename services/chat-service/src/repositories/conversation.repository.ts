@@ -80,4 +80,24 @@ export const conversationRepository = {
     const results = await cursor.toArray();
     return results.map((doc) => toConversationSummary(doc));
   },
+
+  async touchConversation(
+    conversationId: string,
+    preview: string,
+  ): Promise<void> {
+    const client = await getMongoClient();
+    const db = client.db();
+    await db.collection(CONVERSATIONS_COLLECTION).updateOne(
+      {
+        _id: new ObjectId(conversationId),
+      },
+      {
+        $set: {
+          lastMessageAt: new Date(),
+          lastMessagePreview: preview,
+          updatedAt: new Date(),
+        },
+      },
+    );
+  },
 };
