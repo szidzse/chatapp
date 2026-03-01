@@ -62,4 +62,22 @@ export const conversationRepository = {
       .findOne({ _id: new ObjectId(id) });
     return doc ? toConversation(doc) : null;
   },
+
+  async findSummaries(
+    filter: ConversationFilter,
+  ): Promise<ConversationSummary[]> {
+    const client = await getMongoClient();
+    const db = client.db();
+    const cursor = db
+      .collection(CONVERSATIONS_COLLECTION)
+      .find({
+        participantIds: filter.participantId,
+      })
+      .sort({
+        lastMessageAt: -1,
+        updatedAt: -1,
+      });
+    const results = await cursor.toArray();
+    return results.map((doc) => toConversationSummary(doc));
+  },
 };
