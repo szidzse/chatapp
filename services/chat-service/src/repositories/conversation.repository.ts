@@ -100,4 +100,13 @@ export const conversationRepository = {
       },
     );
   },
+
+  async removeAll(): Promise<void> {
+    const client = await getMongoClient();
+    const db = client.db();
+    await Promise.all([
+      db.collection(CONVERSATIONS_COLLECTION).deleteMany({}),
+      db.collection(MESSAGES_COLLECTION).deleteMany({}),
+    ]);
+  },
 };
