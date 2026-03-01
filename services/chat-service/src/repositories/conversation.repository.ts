@@ -10,8 +10,9 @@ import type {
 } from "@/types/conversation";
 
 import { getMongoClient } from "@/clients/mongo.client";
+import { title } from "node:process";
 
-const CONVERSATION_COLLECTION = "conversations";
+const CONVERSATIONS_COLLECTION = "conversations";
 const MESSAGES_COLLECTION = "messages";
 
 const toConversation = (doc: WithId<Document>): Conversation => ({
@@ -31,3 +32,25 @@ const toConversation = (doc: WithId<Document>): Conversation => ({
 
 const toConversationSummary = (doc: WithId<Document>): ConversationSummary =>
   toConversation(doc);
+
+export const conversationRepository = {
+  async create(input: CreateConversationInput): Promise<Conversation> {
+    const client = await getMongoClient();
+    const db = client.db();
+    const collection = db.collection(CONVERSATIONS_COLLECTION);
+    const now = new Date();
+
+    const document = {
+      _id: randomUUID(),
+      title: input.title ?? null,
+      participantIds: input.participantIds ?? [],
+      createdAt: now,
+      updatedAt: now,
+      lastMessageAt: null,
+      lastMessagePreview: null,
+    };
+
+    await collection.insertOne(document as unknown as Document);
+    return toConversation(document as unknown as WithId<Document>);
+  },
+};
