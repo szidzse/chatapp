@@ -53,4 +53,13 @@ export const conversationRepository = {
     await collection.insertOne(document as unknown as Document);
     return toConversation(document as unknown as WithId<Document>);
   },
+
+  async findById(id: string): Promise<Conversation | null> {
+    const client = await getMongoClient();
+    const db = client.db();
+    const doc = await db
+      .collection(CONVERSATIONS_COLLECTION)
+      .findOne({ _id: new ObjectId(id) });
+    return doc ? toConversation(doc) : null;
+  },
 };
