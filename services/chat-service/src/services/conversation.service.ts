@@ -32,4 +32,10 @@ export const conversationService = {
     await conversationCache.set(conversation);
     return conversation;
   },
+
+  async listConversation(
+    filter: ConversationFilter,
+  ): Promise<ConversationSummary[]> {
+    return conversationRepository.findSummaries(filter);
+  },
 };
