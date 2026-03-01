@@ -13,7 +13,7 @@ const parsedConversation = (params: unknown) => {
   return id;
 };
 
-export const createConversation: RequestHandler = asyncHandler(
+export const createConversationHandler: RequestHandler = asyncHandler(
   async (req, res) => {
     const user = getAuthenticatedUser(req);
     const payload = createConversationSchema.parse(req.body);
@@ -34,5 +34,21 @@ export const createConversation: RequestHandler = asyncHandler(
     });
 
     res.status(201).json({ data: conversation });
+  },
+);
+
+export const listConversationHandler: RequestHandler = asyncHandler(
+  async (req, res) => {
+    const user = getAuthenticatedUser(req);
+    const filter = listConversationQuerySchema.parse(req.query);
+
+    if (filter.participantIds && filter.participantIds !== user.id) {
+      throw new HttpError(403, "Unauthorized");
+    }
+
+    const conversations = await conversationService.listConversation({
+      participantId: user.id,
+    });
+    res.status(201).json({ data: conversations });
   },
 );
