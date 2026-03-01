@@ -1,11 +1,14 @@
 import type { Conversation } from "@/types/conversation";
 
 import { getRedisClient } from "@/clients/redis.client";
-import { get } from "https";
 
 const CACHE_PREFIX = "conversation";
 const CACHE_TTL_SECONDS = 60;
 
+/**
+ * Serializes a Conversation object to a JSON string,
+ * converting Date fields to ISO 8601 strings for Redis storage.
+ */
 const serialize = (conversation: Conversation): string => {
   return JSON.stringify({
     ...conversation,
@@ -14,6 +17,10 @@ const serialize = (conversation: Conversation): string => {
   });
 };
 
+/**
+ * Deserializes a raw JSON string from Redis back into a Conversation object,
+ * converting ISO 8601 date strings back to Date instances.
+ */
 const deserialize = (raw: string): Conversation => {
   const parsed = JSON.parse(raw) as Conversation & {
     createdAt: string;
