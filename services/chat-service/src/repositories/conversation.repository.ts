@@ -28,3 +28,6 @@ const toConversation = (doc: WithId<Document>): Conversation => ({
   lastMessagePreview:
     typeof doc.lastMessagePreview === "string" ? doc.lastMessagePreview : null,
 });
+
+const toConversationSummary = (doc: WithId<Document>): ConversationSummary =>
+  toConversation(doc);
