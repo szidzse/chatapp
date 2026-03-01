@@ -37,4 +37,9 @@ export const userRepository = {
       { upsert: true },
     );
   },
+
+  async findUserById(id: string): Promise<UserDocument | null> {
+    const collection = await getCollection();
+    return collection.findOne({ _id: id });
+  },
 };
