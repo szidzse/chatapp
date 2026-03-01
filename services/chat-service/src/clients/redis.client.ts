@@ -14,7 +14,7 @@ export const getRedisClient = (): Redis => {
     });
 
     redis.on("connect", () => {
-      logger.info("Redis connected established");
+      logger.info("Redis connection established");
     });
 
     redis.on("reconnect", () => {
