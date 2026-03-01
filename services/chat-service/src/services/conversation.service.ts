@@ -38,4 +38,12 @@ export const conversationService = {
   ): Promise<ConversationSummary[]> {
     return conversationRepository.findSummaries(filter);
   },
+
+  async touchConversation(
+    conversationId: string,
+    preview: string,
+  ): Promise<void> {
+    await conversationRepository.touchConversation(conversationId, preview);
+    await conversationCache.delete(conversationId);
+  },
 };
