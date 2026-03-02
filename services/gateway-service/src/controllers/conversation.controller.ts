@@ -1,0 +1,35 @@
+import type { RequestHandler } from "express";
+
+import { chatProxyService } from "@/services/chat-proxy.service";
+import { getAuthenticatedUser } from "@/utils/auth";
+import {
+  createConversationBodySchema,
+  listConversationsQuerySchema,
+  conversationIdParamsSchema,
+} from "@/validation/conversation.schema";
+import { asyncHandler, HttpError } from "@chatapp/common";
+
+export const createConversationHandler: RequestHandler = asyncHandler(
+  async (req, res) => {
+    const user = getAuthenticatedUser(req);
+    const payload = createConversationBodySchema.parse(req.body);
+
+    const uniqueParticipantIds = Array.from(
+      new Set([...payload.participantIds, user.id]),
+    );
+
+    if (uniqueParticipantIds.length < 2) {
+      throw new HttpError(
+        400,
+        "Conversation must atleast include one other participant",
+      );
+    }
+
+    const conversation = await chatProxyService.createConversation(user.id, {
+      title: payload.title,
+      participantIds: uniqueParticipantIds,
+    });
+
+    res.status(201).json({ data: conversation });
+  },
+);
