@@ -66,6 +66,9 @@ USER nodeuser
 ENV NODE_ENV=production
 ENV AUTH_SERVICE_PORT=4003
 
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+    CMD wget -qO- http://localhost:4003/health || exit 1
+
 EXPOSE 4003
 
 WORKDIR /app/services/auth-service
