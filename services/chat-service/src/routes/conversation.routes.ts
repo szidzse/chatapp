@@ -1,13 +1,19 @@
 import {
   createConversationHandler,
+  createMessageHandler,
   getConversationHandler,
   listConversationHandler,
+  listMessageHandler,
 } from "@/controllers/conversation.controller";
 import { attachAuthenticatedUser } from "@/middleware/authenticated-user";
 import {
   createConversationSchema,
   listConversationQuerySchema,
 } from "@/validation/conversation.schema";
+import {
+  createMessageBodySchema,
+  listMessagesQuerySchema,
+} from "@/validation/message.schema";
 import { conversationIdParamsSchema } from "@/validation/shared.schema";
 import { validateRequest } from "@chatapp/common";
 import { Router } from "express";
@@ -32,4 +38,22 @@ conversationRouter.get(
   "/:id",
   validateRequest({ params: conversationIdParamsSchema }),
   getConversationHandler,
+);
+
+conversationRouter.post(
+  "/:id/messages",
+  validateRequest({
+    params: conversationIdParamsSchema,
+    body: createMessageBodySchema,
+  }),
+  createMessageHandler,
+);
+
+conversationRouter.get(
+  "/:id/messages",
+  validateRequest({
+    params: conversationIdParamsSchema,
+    query: listMessagesQuerySchema,
+  }),
+  listMessageHandler,
 );
