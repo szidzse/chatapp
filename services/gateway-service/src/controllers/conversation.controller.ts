@@ -33,3 +33,17 @@ export const createConversationHandler: RequestHandler = asyncHandler(
     res.status(201).json({ data: conversation });
   },
 );
+
+export const listConversationsHandler: RequestHandler = asyncHandler(
+  async (req, res) => {
+    const user = getAuthenticatedUser(req);
+    const { participantId } = listConversationsQuerySchema.parse(req.query);
+
+    if (participantId && participantId !== user.id) {
+      throw new HttpError(403, "Cannot list conversations for another user");
+    }
+
+    const conversations = await chatProxyService.listConversations(user.id);
+    res.json({ data: conversations });
+  },
+);
