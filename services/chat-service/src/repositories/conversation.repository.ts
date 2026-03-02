@@ -10,7 +10,6 @@ import type {
 } from "@/types/conversation";
 
 import { getMongoClient } from "@/clients/mongo.client";
-import { title } from "node:process";
 
 const CONVERSATIONS_COLLECTION = "conversations";
 const MESSAGES_COLLECTION = "messages";
