@@ -1,4 +1,4 @@
-import { HttpError } from "@chatapp/common";
+import { HttpError, USER_ID_HEADER } from "@chatapp/common";
 import axios, { AxiosRequestConfig } from "axios";
 
 import { env } from "@/config/env";
@@ -89,3 +89,23 @@ export interface CreateConversationPayload {
 export interface CreateMessagePayload {
   body: string;
 }
+
+export const chatProxyService = {
+  async createConversation(
+    userId: string,
+    payload: CreateConversationPayload,
+  ): Promise<ConversationDto> {
+    try {
+      const response = await client.post<ConversationResponse>(
+        `/conversations`,
+        payload,
+        {
+          headers: { [USER_ID_HEADER]: userId },
+        },
+      );
+      return response.data.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  },
+};
