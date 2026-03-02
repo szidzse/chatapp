@@ -59,7 +59,7 @@ export const conversationRepository = {
     const db = client.db();
     const doc = await db
       .collection(CONVERSATIONS_COLLECTION)
-      .findOne({ _id: new ObjectId(id) });
+      .findOne({ _id: id as unknown as ObjectId });
     return doc ? toConversation(doc) : null;
   },
 
@@ -89,7 +89,7 @@ export const conversationRepository = {
     const db = client.db();
     await db.collection(CONVERSATIONS_COLLECTION).updateOne(
       {
-        _id: new ObjectId(conversationId),
+        _id: conversationId as unknown as ObjectId,
       },
       {
         $set: {
