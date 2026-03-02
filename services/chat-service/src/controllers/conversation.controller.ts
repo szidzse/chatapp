@@ -7,6 +7,8 @@ import {
 } from "@/validation/conversation.schema";
 import { conversationIdParamsSchema } from "@/validation/shared.schema";
 import { getAuthenticatedUser } from "@/utils/auth";
+import { createMessageBodySchema } from "@/validation/message.schema";
+import { messageService } from "@/services/message.service";
 
 const parsedConversation = (params: unknown) => {
   const { id } = conversationIdParamsSchema.parse(params);
@@ -65,5 +67,21 @@ export const getConversationHandler: RequestHandler = asyncHandler(
     }
 
     res.status(201).json({ data: conversation });
+  },
+);
+
+export const createMessageHandler: RequestHandler = asyncHandler(
+  async (req, res) => {
+    const user = getAuthenticatedUser(req);
+    const conversationId = parsedConversation(req.params);
+    const payload = createMessageBodySchema.parse(req.body);
+
+    const message = await messageService.createMessage(
+      conversationId,
+      user.id,
+      payload.body,
+    );
+
+    res.status(201).json({ data: message });
   },
 );
