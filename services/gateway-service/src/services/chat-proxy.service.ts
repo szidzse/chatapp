@@ -122,4 +122,18 @@ export const chatProxyService = {
       return handleAxiosError(error);
     }
   },
+
+  async getConversation(id: string, userId: string): Promise<ConversationDto> {
+    try {
+      const response = await client.get<ConversationResponse>(
+        `/conversations/${id}`,
+        {
+          headers: { [USER_ID_HEADER]: userId },
+        },
+      );
+      return response.data.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  },
 };
