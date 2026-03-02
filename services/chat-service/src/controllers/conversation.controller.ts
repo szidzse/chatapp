@@ -1,4 +1,4 @@
-import { asyncHandler, HttpError, type AsyncHandler } from "@chatapp/common";
+import { asyncHandler, HttpError } from "@chatapp/common";
 import type { RequestHandler } from "express";
 import { conversationService } from "@/services/conversation.service";
 import {
@@ -7,7 +7,10 @@ import {
 } from "@/validation/conversation.schema";
 import { conversationIdParamsSchema } from "@/validation/shared.schema";
 import { getAuthenticatedUser } from "@/utils/auth";
-import { createMessageBodySchema } from "@/validation/message.schema";
+import {
+  createMessageBodySchema,
+  listMessagesQuerySchema,
+} from "@/validation/message.schema";
 import { messageService } from "@/services/message.service";
 
 const parsedConversation = (params: unknown) => {
@@ -83,5 +86,25 @@ export const createMessageHandler: RequestHandler = asyncHandler(
     );
 
     res.status(201).json({ data: message });
+  },
+);
+
+export const listMessageHandler: RequestHandler = asyncHandler(
+  async (req, res) => {
+    const user = getAuthenticatedUser(req);
+    const conversationId = parsedConversation(req.params);
+    const query = listMessagesQuerySchema.parse(req.query);
+    const after = query.after ? new Date(query.after) : undefined;
+
+    const messages = await messageService.listMessages(
+      conversationId,
+      user.id,
+      {
+        limit: query.limit,
+        after,
+      },
+    );
+
+    res.json({ data: messages });
   },
 );
