@@ -22,3 +22,59 @@ const toMessage = (doc: WithId<Document>): Message => ({
       }))
     : [],
 });
+
+export const messageRepository = {
+  async create(
+    conversationId: string,
+    senderId: string,
+    body: string,
+  ): Promise<Message> {
+    const client = await getMongoClient();
+    const db = client.db();
+    const collection = db.collection(MESSAGES_COLLECTION);
+    const now = new Date();
+    const document = {
+      _id: randomUUID(),
+      conversationId,
+      senderId,
+      body,
+      createdAt: now,
+    };
+
+    await collection.insertOne(document as unknown as Document);
+
+    return toMessage(document as unknown as WithId<Document>);
+  },
+
+  async findByConversation(
+    conversationId: string,
+    options: MessageListOptions = {},
+  ): Promise<Message[]> {
+    const client = await getMongoClient();
+    const db = client.db();
+    const query: Record<string, unknown> = {
+      conversationId,
+    };
+    if (options.after) {
+      query.createdAt = { $gt: options.after };
+    }
+
+    const cursor = db
+      .collection(MESSAGES_COLLECTION)
+      .find(query)
+      .sort({ createdAt: -1 })
+      .limit(options.limit ?? 50);
+
+    const messages = await cursor.toArray();
+    return messages.map((doc) => toMessage(doc));
+  },
+
+  async findById(messageId: string): Promise<Message | null> {
+    const client = await getMongoClient();
+    const db = client.db();
+    const doc = await db
+      .collection(MESSAGES_COLLECTION)
+      .findOne({ _id: messageId } as unknown as Document);
+    return doc ? toMessage(doc) : null;
+  },
+};
