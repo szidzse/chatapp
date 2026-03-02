@@ -18,7 +18,7 @@ export const sequelize = new Sequelize(env.USER_DB_URL, {
 
 export const connectToDatabase = async () => {
   await sequelize.authenticate();
-  logger.info("User database connection established successfully.");
+  logger.info("User database connection established");
 };
 
 export const initializeDatabase = async () => {
@@ -26,10 +26,10 @@ export const initializeDatabase = async () => {
 
   const syncOptions = env.NODE_ENV === "development" ? {} : { alter: true };
   await sequelize.sync(syncOptions);
-  logger.info("Data synchronized successfully");
+  logger.info("Data synchronized");
 };
 
 export const closeDatabase = async () => {
   await sequelize.close();
-  logger.info("User database connection closed.");
+  logger.info("User database connection closed");
 };

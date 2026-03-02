@@ -1,0 +1,57 @@
+import type { Conversation } from "@/types/conversation";
+
+import { getRedisClient } from "@/clients/redis.client";
+
+const CACHE_PREFIX = "conversation";
+const CACHE_TTL_SECONDS = 60;
+
+/**
+ * Serializes a Conversation object to a JSON string,
+ * converting Date fields to ISO 8601 strings for Redis storage.
+ */
+const serialize = (conversation: Conversation): string => {
+  return JSON.stringify({
+    ...conversation,
+    createdAt: conversation.createdAt.toISOString(),
+    updatedAt: conversation.updatedAt.toISOString(),
+  });
+};
+
+/**
+ * Deserializes a raw JSON string from Redis back into a Conversation object,
+ * converting ISO 8601 date strings back to Date instances.
+ */
+const deserialize = (raw: string): Conversation => {
+  const parsed = JSON.parse(raw) as Conversation & {
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  return {
+    ...parsed,
+    createdAt: new Date(parsed.createdAt),
+    updatedAt: new Date(parsed.updatedAt),
+  };
+};
+
+export const conversationCache = {
+  async get(conversationId: string): Promise<Conversation | null> {
+    const redis = getRedisClient();
+    const payload = await redis.get(`${CACHE_PREFIX}:${conversationId}`);
+    return payload ? deserialize(payload) : null;
+  },
+
+  async set(conversation: Conversation): Promise<void> {
+    const redis = getRedisClient();
+    await redis.setex(
+      `${CACHE_PREFIX}:${conversation.id}`,
+      CACHE_TTL_SECONDS,
+      serialize(conversation),
+    );
+  },
+
+  async delete(conversationId: string): Promise<void> {
+    const redis = getRedisClient();
+    await redis.del(`${CACHE_PREFIX}:${conversationId}`);
+  },
+};
