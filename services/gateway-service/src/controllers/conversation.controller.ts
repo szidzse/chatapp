@@ -47,3 +47,20 @@ export const listConversationsHandler: RequestHandler = asyncHandler(
     res.json({ data: conversations });
   },
 );
+
+export const getConversationHandler: RequestHandler = asyncHandler(
+  async (req, res) => {
+    const user = getAuthenticatedUser(req);
+    const { id } = conversationIdParamsSchema.parse(req.params);
+    const conversation = await chatProxyService.getConversation(id, user.id);
+
+    if (!conversation.participantIds.includes(user.id)) {
+      throw new HttpError(
+        403,
+        "You are not a participant in this conversation",
+      );
+    }
+
+    res.json({ data: conversation });
+  },
+);
