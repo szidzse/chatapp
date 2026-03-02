@@ -36,4 +36,20 @@ export const messageService = {
 
     return message;
   },
+
+  async listMessages(
+    conversationId: string,
+    requesterId: string,
+    options: MessageListOptions = {},
+  ): Promise<Message[]> {
+    // Ensure conversation exists; re-use conversation service for caching behavior
+    const conversation =
+      await conversationService.getConversationById(conversationId);
+
+    if (!conversation.participantIds.includes(requesterId)) {
+      throw new HttpError(403, "Requester is not part of this conversation");
+    }
+
+    return messageRepository.findByConversation(conversationId, options);
+  },
 };
