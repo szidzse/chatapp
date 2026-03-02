@@ -136,4 +136,23 @@ export const chatProxyService = {
       return handleAxiosError(error);
     }
   },
+
+  async createMessage(
+    conversationId: string,
+    userId: string,
+    payload: CreateMessagePayload,
+  ): Promise<MessageDto> {
+    try {
+      const response = await client.post<MessageResponse>(
+        `/conversations/${conversationId}/messages`,
+        payload,
+        {
+          headers: { [USER_ID_HEADER]: userId },
+        },
+      );
+      return response.data.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  },
 };
