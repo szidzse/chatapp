@@ -3,7 +3,7 @@
 FROM node:22-alpine AS base
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@10.14.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.29.2 --activate
 
 WORKDIR /app
 
@@ -35,7 +35,7 @@ RUN pnpm --filter @chatapp/chat-service build
 FROM node:22-alpine AS production
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@10.14.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.29.2 --activate
 
 # Create a non-root user
 RUN addgroup --system --gid 1001 nodejs && \
