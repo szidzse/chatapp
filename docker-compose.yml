@@ -228,9 +228,9 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       CHAT_SERVICE_PORT: ${CHAT_SERVICE_PORT:-4002}
-      MONGO_URL: ${MONGO_URL}
-      REDIS_URL: ${REDIS_URL}
-      RABBITMQ_URL: ${RABBITMQ_URL}
+      MONGO_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME:-root}:${MONGO_INITDB_ROOT_PASSWORD:-password}@mongo:27017/chatapp?authSource=admin
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
       JWT_SECRET: ${JWT_SECRET}
     depends_on:
