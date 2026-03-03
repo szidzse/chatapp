@@ -180,6 +180,9 @@ importers:
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
+      tsc-alias:
+        specifier: ^1.8.16
+        version: 1.8.16
 
   services/user-service:
     dependencies:
