@@ -86,6 +86,46 @@ services:
       retries: 5
       start_period: 30s
 
+  gateway-service:
+    build:
+      context: .
+      dockerfile: services/gateway-service/Dockerfile
+    container_name: chatapp-gateway-service
+    ports:
+      - "${GATEWAY_PORT:-4000}:4000"
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      GATEWAY_PORT: ${GATEWAY_PORT:-4000}
+      #USER_SERVICE_URL: http://user-service:4001
+      AUTH_SERVICE_URL: http://auth-service:4003
+      #CHAT_SERVICE_URL: http://chat-service:4002
+      JWT_SECRET: ${JWT_SECRET}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
+    depends_on:
+      auth-service:
+        condition: service_healthy
+    # user-service:
+    #   condition: service_healthy
+    # chat-service:
+    #   condition: service_healthy
+    # networks:
+    #   - chatapp-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:4000/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
   auth-service:
     build:
       context: .
