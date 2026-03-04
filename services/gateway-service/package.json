@@ -1,8 +1,11 @@
 {
   "name": "@chatapp/gateway-service",
   "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json --resolve-full-paths",
     "dev": "tsx watch src/index.ts",
@@ -28,6 +31,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10"
+    "@types/jsonwebtoken": "^9.0.10",
+    "tsc-alias": "^1.8.16"
   }
 }

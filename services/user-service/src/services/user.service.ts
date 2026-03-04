@@ -31,6 +31,7 @@ class UserService {
         email: user.email,
         displayName: user.displayName,
         createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString(),
       });
 
       return user;
@@ -66,6 +67,7 @@ class UserService {
       email: user.email,
       displayName: user.displayName,
       createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
     });
 
     return user;
